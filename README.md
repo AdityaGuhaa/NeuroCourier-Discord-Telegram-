@@ -1,4 +1,4 @@
-# GuhaGPTbot
+# NeuroCourier powered by GuhaGPTbot
 # A Telegram AI Agent (Local LLM / Gemini Backend)
 
 <img width="1365" height="1000" alt="Screenshot 2026-02-14 at 8 38 43 PM" src="https://github.com/user-attachments/assets/e534bdb6-8e10-4e3b-b3e4-d9766b7707c8" />
@@ -330,4 +330,5 @@ Ready for further extension into a full autonomous AI agent.
 Open for personal and educational use.
 
 ---
+
 
