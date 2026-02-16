@@ -3,7 +3,7 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
 
 #CONFIG
-TELEGRAM_BOT_TOKEN = "8544832281:AAGGo5kbtSCW-TgZizRjRz6omRmGfaZM3T0"
+TELEGRAM_BOT_TOKEN = "Paste Your Telegram Bot key here"
 
 USE_LOCAL_LLM = True   # True = Ollama, False = Gemini
 
