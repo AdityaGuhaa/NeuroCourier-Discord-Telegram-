@@ -12,7 +12,7 @@ from telegram.constants import ParseMode
 
 # ================= CONFIG =================
 
-TELEGRAM_BOT_TOKEN = "8304160719:AAFT0QYlF9V0T21ZyKoI5CIaAbeDnSu9Zj0"
+TELEGRAM_BOT_TOKEN = ""
 
 USE_LOCAL_LLM = True
 
