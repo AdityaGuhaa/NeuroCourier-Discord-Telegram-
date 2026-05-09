@@ -1,9 +1,21 @@
 # NeuroCourier (GuhaGPT) 
 # A Multiplatform Multimodal AI Assistant
 
-NeuroCourier (GuhaGPT) is a privacy‑first, multiplatform, multimodal AI assistant developed by Aditya Guha. It supports both Telegram and Discord simultaneously and is powered by locally hosted Large Language Models using Ollama.
+NeuroCourier (GuhaGPT) is a privacy‑first, multiplatform, multimodal AI assistant developed by Aditya Guha. It supports both Telegram and Discord simultaneously and is powered by locally hosted or cloud hosted Large Language Models using Ollama.
 
 NeuroCourier can understand text and images, generate intelligent responses, and operate across multiple communication platforms while sharing a single unified AI backend.
+
+# Discord
+<img width="600" alt="Screenshot 2026-05-09 at 10 17 53 PM" src="https://github.com/user-attachments/assets/f6d2241c-88ac-40e0-bcf2-3ee5b3176656" />
+
+## Discord Backend
+<img width="600" alt="Screenshot 2026-05-09 at 10 16 30 PM" src="https://github.com/user-attachments/assets/a69fb523-bf88-41bc-a444-815698de6346" />
+
+# Telegram
+<img width="600" alt="Screenshot 2026-05-09 at 10 17 28 PM" src="https://github.com/user-attachments/assets/09aab092-a336-4df8-9b58-fe88226addaa" />
+
+## Telegram Backend
+<img width="600" alt="Screenshot 2026-05-09 at 10 17 00 PM" src="https://github.com/user-attachments/assets/007ae222-6e2b-4c25-9983-59c3fcf365c6" />
 
 # Overview
 
@@ -13,10 +25,9 @@ NeuroCourier is designed with a modular architecture that separates the AI logic
 * Discord Bot
 * Future support: WhatsApp, Web UI, APIs, Slack, etc.
 
-The assistant runs locally, ensuring:
+The assistant runs locally or via cloud-routed Ollama models, ensuring:
 
 * Full privacy
-* No external API dependency
 * Low latency
 * Full control over models
 
@@ -39,24 +50,27 @@ All platforms use the same AI instance.
 Supports:
 
 * Text input
-* Image input
+* Image input with optional caption/question
 * Image analysis
 * Contextual reasoning
 
-Powered by vision-capable LLMs such as:
-Example:
-* qwen3-vl:2b
+Powered by vision-capable LLMs via Ollama. Examples:
 
-## Local LLM Inference
+* `qwen3-vl:2b` (local)
+* `qwen3-vl:235b-cloud` (cloud-routed)
+* `gemma4:31b-cloud` (cloud-routed)
+* `gpt-oss:120b-cloud` (cloud-routed)
 
-Runs entirely locally using Ollama.
+## Local & Cloud LLM Inference
+
+Runs via Ollama — supporting both local models and cloud-routed models.
 
 Benefits:
 
 * Privacy‑first
-* No cloud dependency
-* No API costs
-* Offline capability
+* Flexible model selection
+* Offline capability with local models
+* Access to larger models via cloud routing
 
 ## Unified Backend Architecture
 
@@ -91,7 +105,7 @@ Shared AI Backend (llm_backend.py)
 Ollama
   │
   ▼
-Local LLM Model (qwen3-vl:2b)
+Local or Cloud LLM Model
 ```
 
 # Project Structure
@@ -102,6 +116,8 @@ NeuroCourier/
 ├── bot.py
 ├── discord_bot.py
 ├── llm_backend.py
+├── .env               (not committed — store your tokens here)
+├── .env.example       (template)
 ├── data/
 ├── requirements.txt
 └── README.md
@@ -131,8 +147,8 @@ This is the most important component.
 Handles:
 
 * Receiving Telegram messages
-* Receiving Telegram images
-* Sending responses
+* Receiving Telegram images with optional captions
+* Sending responses with chunking for long replies
 * Platform-specific formatting
 
 Delegates AI tasks to llm_backend.py
@@ -144,8 +160,8 @@ Does NOT contain AI logic.
 Handles:
 
 * Receiving Discord messages
-* Receiving Discord image attachments
-* Sending responses
+* Receiving Discord image attachments with optional text
+* Sending responses with chunking for Discord's 2000 character limit
 
 Delegates AI tasks to llm_backend.py
 
@@ -211,35 +227,17 @@ Benefits:
 
 # How It Works
 
-Step 1:
+Step 1: User sends message (text or image) via Telegram or Discord.
 
-User sends message via Telegram or Discord.
+Step 2: Platform bot receives message.
 
-Step 2:
+Step 3: Bot calls `run_llm()` from llm_backend.py
 
-Platform bot receives message.
+Step 4: llm_backend communicates with Ollama.
 
-Step 3:
+Step 5: Ollama runs the model and generates response.
 
-Bot calls:
-
-```
-run_llm()
-```
-
-from llm_backend.py
-
-Step 4:
-
-llm_backend communicates with Ollama.
-
-Step 5:
-
-Ollama runs the model and generates response.
-
-Step 6:
-
-Response is sent back to user.
+Step 6: Response is chunked if necessary and sent back to user.
 
 # Concurrency Handling
 
@@ -257,48 +255,47 @@ System remains stable.
 
 * Python 3.10+
 * Ollama
-* Telegram Bot Token
-* Discord Bot Token
+* Telegram Bot Token (from @BotFather)
+* Discord Bot Token (from Discord Developer Portal)
 
 ## Python Libraries
 
-Install:
-
 ```
-pip install python-telegram-bot discord.py ollama
+pip install -r requirements.txt
 ```
 
 # Setup Instructions
 
 ## Step 1 — Install Ollama
 
-Install from:
+Install from: [https://ollama.com](https://ollama.com)
 
-[https://ollama.com](https://ollama.com)
-
-## Step 2 — Pull Model
+## Step 2 — Pull a Model
 
 ```
 ollama pull qwen3-vl:2b
 ```
 
----
-
 ## Step 3 — Configure Tokens
 
-In bot.py:
+Create a `.env` file in the project root:
 
 ```
-TELEGRAM_BOT_TOKEN = "YOUR_TOKEN"
+TELEGRAM_BOT_TOKEN=your_telegram_token_here
+DISCORD_TOKEN=your_discord_token_here
 ```
 
-In discord_bot.py:
+Never commit this file. It is already listed in `.gitignore`.
 
-```
-DISCORD_TOKEN = "YOUR_TOKEN"
+## Step 4 — Configure Model
+
+In `llm_backend.py`, set your preferred model:
+
+```python
+MODEL_NAME = "qwen3-vl:2b"
 ```
 
-## Step 4 — Run Bots
+## Step 5 — Run Bots
 
 Terminal 1:
 
@@ -316,11 +313,11 @@ Both will run simultaneously.
 
 # Security and Privacy
 
-NeuroCourier runs locally.
+NeuroCourier runs locally via Ollama.
 
-No external data sharing.
+Tokens are stored in `.env` and never committed to version control.
 
-No cloud dependency.
+No external data sharing unless a cloud-routed model is used.
 
 User data remains private.
 
@@ -356,11 +353,11 @@ Aditya Guha
 
 AI & Machine Learning Developer
 
-Developer of NeuroCourier (GuhaGPT)
+[linktr.ee/adityaguha](https://linktr.ee/adityaguha)
 
 # License
 
-This project is for educational and development purposes.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 # Summary
 
